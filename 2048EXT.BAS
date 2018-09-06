@@ -1,9 +1,10 @@
-DECLARE FUNCTION Move! (M!(), nap$)
-DECLARE SUB Randomizer (M!(), size!, num!, max!)
+DECLARE SUB KeyFree ()
 DECLARE SUB DrawCell (x!, y!, n!)
-DECLARE SUB DrawStat (s!, M!)
 DECLARE SUB DrawField (M!())
+DECLARE SUB DrawStat (s!, M!)
 DECLARE SUB Game (size!)
+DECLARE SUB Randomizer (M!(), size!, num!, max!)
+DECLARE FUNCTION OneMove! (M!(), nap$)
 
 WIDTH 80, 50
 CLS
@@ -64,29 +65,36 @@ SUB DrawStat (s, M)
 END SUB
 
 SUB Game (size)
-        DIM M(size, size)
-        score = 0
-        moves = 0
-        ext = 0
+    DIM M(size, size)
+    score = 0
+    moves = 0
+    ext = 0
+    DO
+        CALL DrawStat(score, moves)
+        'CALL DrawField(M())
+        CALL Randomizer(M(), size, 3, 2)
+        CALL DrawField(M())
         DO
-                CALL DrawStat(score, moves)
-                'CALL DrawField(M())
-                CALL Randomizer(M(), size, 3, 2)
-                CALL DrawField(M())
-                DO
-                        k$ = INKEY$
-                LOOP UNTIL k$ <> ""
-                IF k$ = CHR$(0) + CHR$(72) THEN score = score + Move(M(), "up"): moves = moves + 1
-                IF k$ = CHR$(0) + CHR$(75) THEN score = score + Move(M(), "left"): moves = moves + 1
-                IF k$ = CHR$(0) + CHR$(77) THEN score = score + Move(M(), "right"): moves = moves + 1
-                IF k$ = CHR$(0) + CHR$(80) THEN score = score + Move(M(), "down"): moves = moves + 1
-                IF k$ = CHR$(27) THEN END
-                'CALL DrawStat(score, moves)
-        LOOP UNTIL ext <> 0
-
+            k$ = INKEY$
+        LOOP UNTIL k$ <> ""
+        IF k$ = CHR$(0) + CHR$(72) THEN score = score + OneMove(M(), "up"): moves = moves + 1
+        IF k$ = CHR$(0) + CHR$(75) THEN score = score + OneMove(M(), "left"): moves = moves + 1
+        IF k$ = CHR$(0) + CHR$(77) THEN score = score + OneMove(M(), "right"): moves = moves + 1
+        IF k$ = CHR$(0) + CHR$(80) THEN score = score + OneMove(M(), "down"): moves = moves + 1
+        IF k$ = CHR$(27) THEN END
+        'CALL DrawStat(score, moves)
+    LOOP UNTIL ext <> 0
 END SUB
 
-FUNCTION Move (M(), nap$)
+SUB KeyFree ()
+    'Освободим клавиатурный буфер, чтоб не пищало
+    DO
+    LOOP UNTIL INKEY$ = ""
+END SUB
+
+FUNCTION OneMove (M(), nap$)
+    'Некрасиво, конечно, что на каждое направление написан практически
+    'одинаковый код, но так было быстрей
     score = 0
     DIM B(12, 12)
     IF nap$ = "up" THEN
@@ -99,7 +107,7 @@ FUNCTION Move (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i - 1, j) = M(i, j) AND B(i, j) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i - 1, j) = M(i, j) AND B(i - 1, j) = 0 THEN
                         M(i - 1, j) = M(i, j) + 1
                         M(i, j) = 0
                         B(i - 1, j) = 1
@@ -109,6 +117,7 @@ FUNCTION Move (M(), nap$)
                 NEXT
             NEXT
             CALL DrawField(M())
+            KeyFree
         LOOP UNTIL mov = 0
     END IF
     IF nap$ = "left" THEN
@@ -121,7 +130,7 @@ FUNCTION Move (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i, j - 1) = M(i, j) AND B(i, j) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i, j - 1) = M(i, j) AND B(i, j - 1) = 0 THEN
                         M(i, j - 1) = M(i, j) + 1
                         M(i, j) = 0
                         B(i, j - 1) = 1
@@ -131,6 +140,7 @@ FUNCTION Move (M(), nap$)
                 NEXT
             NEXT
             CALL DrawField(M())
+            KeyFree
         LOOP UNTIL mov = 0
     END IF
     IF nap$ = "down" THEN
@@ -143,7 +153,7 @@ FUNCTION Move (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i + 1, j) = M(i, j) AND B(i, j) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i + 1, j) = M(i, j) AND B(i + 1, j) = 0 THEN
                         M(i + 1, j) = M(i, j) + 1
                         M(i, j) = 0
                         B(i + 1, j) = 1
@@ -153,6 +163,7 @@ FUNCTION Move (M(), nap$)
                 NEXT
             NEXT
             CALL DrawField(M())
+            KeyFree
         LOOP UNTIL mov = 0
     END IF
     IF nap$ = "right" THEN
@@ -165,7 +176,7 @@ FUNCTION Move (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i, j + 1) = M(i, j) AND B(i, j) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i, j + 1) = M(i, j) AND B(i, j + 1) = 0 THEN
                         M(i, j + 1) = M(i, j) + 1
                         M(i, j) = 0
                         B(i, j + 1) = 1
@@ -175,14 +186,15 @@ FUNCTION Move (M(), nap$)
                 NEXT
             NEXT
             CALL DrawField(M())
+            KeyFree
         LOOP UNTIL mov = 0
     END IF
-    Move = score
+    OneMove = score
 END FUNCTION
 
 SUB Randomizer (M(), size, num, max)
 
-'snazhala uznat' est li mesto, esli net - game over
+'Сначала узнать, есть ли место, если нет - game over
 
         FOR i = 1 TO num
                 DO
