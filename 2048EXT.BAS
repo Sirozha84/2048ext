@@ -71,7 +71,6 @@ SUB Game (size)
     ext = 0
     DO
         CALL DrawStat(score, moves)
-        'CALL DrawField(M())
         CALL Randomizer(M(), size, 3, 2)
         CALL DrawField(M())
         DO
@@ -107,7 +106,7 @@ FUNCTION OneMove (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i - 1, j) = M(i, j) AND B(i - 1, j) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i - 1, j) = M(i, j) AND B(i, j) = 0 AND B(i - 1, j) = 0 THEN
                         M(i - 1, j) = M(i, j) + 1
                         M(i, j) = 0
                         B(i - 1, j) = 1
@@ -130,7 +129,7 @@ FUNCTION OneMove (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i, j - 1) = M(i, j) AND B(i, j - 1) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i, j - 1) = M(i, j) AND B(i, j) = 0 AND B(i, j - 1) = 0 THEN
                         M(i, j - 1) = M(i, j) + 1
                         M(i, j) = 0
                         B(i, j - 1) = 1
@@ -153,7 +152,7 @@ FUNCTION OneMove (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i + 1, j) = M(i, j) AND B(i + 1, j) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i + 1, j) = M(i, j) AND B(i, j) = 0 AND B(i + 1, j) = 0 THEN
                         M(i + 1, j) = M(i, j) + 1
                         M(i, j) = 0
                         B(i + 1, j) = 1
@@ -176,7 +175,7 @@ FUNCTION OneMove (M(), nap$)
                         M(i, j) = 0
                         mov = 1
                     END IF
-                    IF M(i, j) <> 0 AND M(i, j + 1) = M(i, j) AND B(i, j + 1) = 0 THEN
+                    IF M(i, j) <> 0 AND M(i, j + 1) = M(i, j) AND B(i, j) = 0 AND B(i, j + 1) = 0 THEN
                         M(i, j + 1) = M(i, j) + 1
                         M(i, j) = 0
                         B(i, j + 1) = 1
